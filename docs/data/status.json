@@ -1,1 +1,40 @@
-{}
+{
+ "last_run": "2026-11-08T10:42+05:30",
+ "first_run": true,
+ "days": 90,
+ "candidates": 1340,
+ "new_high": 369,
+ "new_maybe": 262,
+ "new_authors": 26,
+ "model": "nvidia/nemotron-3-ultra-550b-a55b",
+ "email_sent": true,
+ "sources": {
+  "arxiv": 48,
+  "openalex": 1401,
+  "cites": 118,
+  "authors": 26
+ },
+ "topic": "My research primarily focuses on electrokinetic phenomena at micro- and nanoscales, including the fundamental mechanisms, interactions, and combined effects of various electrokinetic, diffusio-kinetic, and thermally driven transport phenomena. These include their investigation in microchannels, nanochannels, and nanopore systems connected to reservoirs, with an emphasis on understanding coupled transport processes and their potential applications. I am particularly interested in translating these fundamental studies into practical technologies such as energy harvesting, water desalination, electrodialysis, reverse electrodialysis, DNA sequencing, and the development of novel biomedical devices.",
+ "authors": [
+  "Martin Z. Bazant",
+  "Andrei S. Dukhin",
+  "Howard A. Stone",
+  "Patrick Tabeling",
+  "Sirshendu De",
+  "Angel V. Delgado",
+  "Junya Suehiro",
+  "Mark A. Hayes"
+ ],
+ "key_papers": [
+  "Schoch 2008 RMP",
+  "Bocquet & Charlaix 2010",
+  "Siria 2013 Nature",
+  "Anderson 1989 ARFM",
+  "Velegol 2016 Soft Matter",
+  "Squires & Bazant 2004 JFM",
+  "Karnik 2005 Nano Lett",
+  "Dekker 2007 Nat Nano",
+  "Wurger 2010 RPP",
+  "Kim 2010 Nat Nano"
+ ]
+}
