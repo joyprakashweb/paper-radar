@@ -1,0 +1,110 @@
+# ---------------------------------------------------------------
+#  Paper Radar settings
+#  Edit this file on GitHub (pencil icon) to change what is tracked.
+#  Keys and passwords are NOT stored here; they live in the repo's
+#  Settings -> Secrets and variables -> Actions.
+# ---------------------------------------------------------------
+
+topic:
+  # The AI reads this to judge whether a paper fits your research.
+  description: >
+    My research primarily focuses on electrokinetic phenomena at micro- and
+    nanoscales, including the fundamental mechanisms, interactions, and
+    combined effects of various electrokinetic, diffusio-kinetic, and
+    thermally driven transport phenomena. These include their investigation
+    in microchannels, nanochannels, and nanopore systems connected to
+    reservoirs, with an emphasis on understanding coupled transport processes
+    and their potential applications. I am particularly interested in
+    translating these fundamental studies into practical technologies such as
+    energy harvesting, water desalination, electrodialysis, reverse
+    electrodialysis, DNA sequencing, and the development of novel biomedical
+    devices.
+  # Things that share keywords with the topic but are NOT wanted.
+  exclude: >
+    Papers that only use electrophoresis as a routine lab assay (gel
+    electrophoresis, SDS-PAGE, western blot, capillary electrophoresis for
+    chemical analysis); genomics or microbiology studies that merely use
+    nanopore (Oxford Nanopore) sequencing as a tool; biological chemiosmosis
+    in mitochondria or cells; aerosol or combustion thermophoresis and
+    microscale-thermophoresis binding assays; piezoelectric, triboelectric or
+    solar energy harvesting; membrane or materials papers with no transport
+    physics; geophysical streaming potential studies.
+
+# Keyword searches (arXiv + journals via OpenAlex). A paper is a candidate
+# if it matches ANY query. In a query, "any" terms are OR-ed; if "and_any"
+# is given, the paper must also contain one of those terms.
+queries:
+  - name: Core electrokinetic and phoretic phenomena
+    any: [electrokinetic, electrokinetics, electroosmosis, electroosmotic,
+          "electro-osmosis", "electro-osmotic", diffusioosmosis, diffusioosmotic,
+          "diffusio-osmosis", "diffusio-osmotic", diffusiophoresis, diffusiophoretic,
+          chemiphoresis, chemiphoretic, thermoelectrophoresis, "thermo-electrophoresis",
+          thermoelectroosmosis, "thermo-electroosmosis", "thermo-electroosmotic",
+          nanofluidic, nanofluidics, nanochannel, nanochannels,
+          "reverse electrodialysis", "streaming potential", "streaming current",
+          "ionic current rectification", "Poisson-Nernst-Planck",
+          "osmotic energy", "osmotic power", "salinity gradient energy",
+          "salinity gradient power", "blue energy", "solid-state nanopore",
+          "ion concentration polarization"]
+  - name: Transport in nanopores and microchannels
+    any: [nanopore, nanopores, microchannel, microchannels, nanoslit, nanoslits,
+          microfluidic, microfluidics, "nanoporous membrane", "ion exchange membrane"]
+    and_any: [electrophoresis, electrophoretic, thermophoresis, thermophoretic,
+              chemiosmosis, chemiosmotic, "electric double layer", "double layer",
+              "Debye layer", "surface charge", "zeta potential", "ion transport",
+              "ionic transport", "ion selectivity", "ionic selectivity", "ionic current",
+              "concentration gradient", "salinity gradient", "temperature gradient",
+              "thermal gradient", "electrochemical transport", "energy harvesting",
+              "power generation", desalination, electrodialysis, "DNA sequencing",
+              "DNA translocation", translocation]
+  - name: Phoresis of colloids and particles
+    any: [electrophoresis, electrophoretic, thermophoresis, thermophoretic, Soret]
+    and_any: [colloid, colloidal, colloids, "soft particle", "double layer",
+              "Debye length", "Debye layer"]
+
+# Your key papers. Any NEW paper citing one of these becomes a candidate.
+# Add or remove lines freely; "doi" is enough (the OpenAlex id is optional).
+key_papers:
+  - {short: "Schoch 2008 RMP", doi: "10.1103/RevModPhys.80.839", openalex: W2130869501}
+  - {short: "Bocquet & Charlaix 2010", doi: "10.1039/B909366B", openalex: W2101974313}
+  - {short: "Siria 2013 Nature", doi: "10.1038/nature11876", openalex: W2005490958}
+  - {short: "Anderson 1989 ARFM", doi: "10.1146/annurev.fl.21.010189.000425", openalex: W2001962804}
+  - {short: "Velegol 2016 Soft Matter", doi: "10.1039/C6SM00052E", openalex: W2375224876}
+  - {short: "Squires & Bazant 2004 JFM", doi: "10.1017/S0022112004009309", openalex: W2080623745}
+  - {short: "Karnik 2005 Nano Lett", doi: "10.1021/nl050493b", openalex: W2104623735}
+  - {short: "Dekker 2007 Nat Nano", doi: "10.1038/nnano.2007.27", openalex: W2009886994}
+  - {short: "Wurger 2010 RPP", doi: "10.1088/0034-4885/73/12/126601", openalex: W2044699539}
+  - {short: "Kim 2010 Nat Nano", doi: "10.1038/nnano.2010.34", openalex: W2055205691}
+
+# Authors you follow. ALL their new papers are shown in their own section.
+authors:
+  - {name: "Martin Z. Bazant", openalex: [A5070486479]}
+  - {name: "Andrei S. Dukhin", openalex: [A5081468381]}
+  - {name: "Howard A. Stone", openalex: [A5083316408, A5129450779]}
+  - {name: "Patrick Tabeling", openalex: [A5108554238]}
+  - {name: "Sirshendu De", openalex: [A5021909284]}
+  - {name: "Angel V. Delgado", openalex: [A5043767639, A5103358653]}
+  - {name: "Junya Suehiro", openalex: [A5035697579]}
+  - {name: "Mark A. Hayes", openalex: [A5062009902]}
+
+# Journals/publishers to boost (badge + ranked higher). Others still appear.
+preferred_venues:
+  journals: ["Journal of Fluid Mechanics", "Langmuir", "Nanoscale", "Physics of Fluids", "Soft Matter"]
+  publishers: ["Royal Society of Chemistry", "American Chemical Society"]
+
+ai:
+  # Tried in order; the first one that answers is used.
+  models: ["google/gemma-4-31b-it", "nvidia/nemotron-3-ultra-550b-a55b",
+           "minimaxai/minimax-m3.1-flash", "mistralai/mistral-large-4-1t-a52b",
+           "nvidia/nemotron-3.5-lightning-30b-a3b"]
+  batch_size: 8          # papers per AI request
+  parallel_requests: 3   # stays well under NVIDIA's free rate limit
+  high_score: 8          # >= this: "Highly relevant"
+  keep_score: 5          # >= this: "Possibly relevant"; below is dropped
+
+run:
+  first_run_days: 90     # how far back the very first run looks
+  window_days: 45        # each daily run re-checks this many days (late-indexed papers)
+  email_max_high: 60     # max "highly relevant" papers listed in one email
+  email_max_maybe: 60
+  email_max_authors: 40
