@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paper Radar</title>
+<style>
+  :root{
+    --ink:#1d2433; --muted:#5f6b7a; --line:#e3e7ee; --bg:#f7f8fa; --card:#fff;
+    --accent:#0b6e69; --soft:#e7f3f2; --warn:#a24a00; --new:#c2410c;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --ink:#e6e9ef; --muted:#9aa5b4; --line:#2a3240; --bg:#12161d; --card:#191f28;
+           --accent:#4fc1b8; --soft:#1d3433; --new:#fb923c; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15px/1.5 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:900px;margin:0 auto;padding:28px 18px 60px}
+  header{border-bottom:3px solid var(--accent);padding-bottom:14px;margin-bottom:18px}
+  .kicker{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  h1{font-size:26px;margin:2px 0 6px}
+  .sub{color:var(--muted);font-size:13.5px}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:13px}
+  .stat b{font-size:17px;display:block}
+  .controls{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+  @media (max-width:640px){ .controls{position:static} }
+  .seg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}
+  .seg button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:18px;
+              padding:5px 12px;font-size:13px;cursor:pointer}
+  .seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  .row input,.row select{border:1px solid var(--line);background:var(--card);color:var(--ink);
+              border-radius:7px;padding:7px 9px;font-size:13.5px}
+  .row input[type=search]{flex:1;min-width:220px}
+  .row select{max-width:240px}
+  label.chk{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:5px}
+  .day{font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:22px 0 4px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin:9px 0}
+  .t{font-size:15.5px;font-weight:600;line-height:1.35}
+  .t a{color:var(--ink);text-decoration:none}
+  .t a:hover{color:var(--accent);text-decoration:underline}
+  .score{display:inline-block;min-width:26px;text-align:center;padding:0 6px;margin-right:6px;border-radius:10px;
+         background:var(--soft);color:var(--accent);font-weight:700;font-size:12.5px;vertical-align:1px}
+  .newb{display:inline-block;font-size:10.5px;font-weight:800;color:var(--new);border:1px solid var(--new);
+        border-radius:4px;padding:0 4px;margin-left:6px;vertical-align:2px}
+  .meta{font-size:12.8px;color:var(--muted);margin-top:3px}
+  .meta a{color:var(--accent)}
+  .reason{font-size:14px;margin-top:6px}
+  .badges{margin-top:7px;display:flex;flex-wrap:wrap;gap:5px}
+  .b{font-size:11.5px;border-radius:5px;padding:1px 7px;background:var(--soft);color:var(--accent)}
+  .b.pref{background:#fff3d6;color:#8a5a00}
+  .b.auth{background:#ece8ff;color:#4b3aa8}
+  @media (prefers-color-scheme: dark){ .b.pref{background:#3a3016;color:#f2c76b} .b.auth{background:#2a2545;color:#b9adff} }
+  details{margin-top:6px} summary{font-size:12.5px;color:var(--accent);cursor:pointer}
+  details p{font-size:13.5px;color:var(--muted);margin:6px 0 0}
+  .empty{color:var(--muted);text-align:center;padding:50px 10px}
+  .more{display:block;margin:18px auto;border:1px solid var(--line);background:var(--card);color:var(--ink);
+        border-radius:8px;padding:8px 18px;cursor:pointer}
+  footer{margin-top:40px;border-top:1px solid var(--line);padding-top:14px;font-size:13px;color:var(--muted)}
+  footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Paper Radar</div>
+    <h1>New papers on your research topic</h1>
+    <div class="sub" id="lastrun">Loading&hellip;</div>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <div class="controls">
+    <div class="seg" id="seg">
+      <button data-g="all" class="on">All</button>
+      <button data-g="high">Highly relevant</button>
+      <button data-g="maybe">Possibly relevant</button>
+      <button data-g="author">Authors you follow</button>
+      <button data-g="cites">Cites key papers</button>
+      <button data-g="new">New since last visit</button>
+    </div>
+    <div class="row">
+      <input id="q" type="search" placeholder="Search title, authors, abstract, journal&hellip;">
+      <select id="cat"><option value="">All categories</option></select>
+      <select id="src"><option value="">Journals + preprints</option><option value="j">Journals only</option><option value="a">Preprints only</option></select>
+      <select id="sort"><option value="found">Newest found</option><option value="score">Most relevant</option><option value="date">Publication date</option></select>
+      <label class="chk"><input type="checkbox" id="pref"> Preferred venues</label>
+    </div>
+  </div>
+
+  <div id="list"></div>
+  <button class="more" id="more" hidden>Show more</button>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let papers = [], status = {}, group = "all", shown = 150, lastVisit = null;
+
+function store(k, v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v);}catch(e){ return null; } }
+
+function fmtDay(d){
+  const n = new Date(), today = `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`;
+  if (d === today) return "Today";
+  const dt = new Date(d + "T00:00:00");
+  return dt.toLocaleDateString(undefined, {weekday:"short", day:"numeric", month:"short", year:"numeric"});
+}
+
+function card(p){
+  const authors = (p.authors||[]).slice(0,5).join(", ") + ((p.n_authors||0) > 5 ? " et al." : "");
+  const isNew = lastVisit && p.found > lastVisit;
+  const badges = [];
+  badges.push(`<span class="b">${p.is_preprint ? ((p.venue||"").startsWith("arXiv") ? "arXiv preprint" : "Preprint") : "Journal"}</span>`);
+  if (p.preferred) badges.push(`<span class="b pref">&#9733; preferred venue</span>`);
+  (p.followed||[]).forEach(a => badges.push(`<span class="b auth">${esc(a)}</span>`));
+  (p.cites||[]).forEach(c => badges.push(`<span class="b">cites ${esc(c)}</span>`));
+  if (p.category && p.category !== "Other") badges.push(`<span class="b">${esc(p.category)}</span>`);
+  const links = [];
+  if (p.doi) links.push(`<a href="https://doi.org/${esc(p.doi)}">DOI</a>`);
+  if (p.arxiv) links.push(`<a href="https://arxiv.org/abs/${esc(p.arxiv)}">arXiv</a>`);
+  return `<div class="card">
+    <div class="t">${p.score!=null?`<span class="score" title="AI relevance score (0-10)">${p.score}</span>`:""}<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a>${isNew?'<span class="newb">NEW</span>':""}</div>
+    <div class="meta">${esc(authors)} &middot; <i>${esc(p.venue)}</i> &middot; ${esc(p.date)} ${links.length?"&middot; "+links.join(" &middot; "):""}</div>
+    ${p.reason?`<div class="reason">${esc(p.reason)}</div>`:""}
+    <div class="badges">${badges.join("")}</div>
+    ${p.abstract?`<details><summary>Abstract</summary><p>${esc(p.abstract)}${p.abstract.length>=900?"&hellip;":""}</p></details>`:""}
+  </div>`;
+}
+
+function filtered(){
+  const q = $("#q").value.trim().toLowerCase(), cat = $("#cat").value, src = $("#src").value, pref = $("#pref").checked;
+  let out = papers.filter(p => {
+    if (group === "high" && p.group !== "high") return false;
+    if (group === "maybe" && p.group !== "maybe") return false;
+    if (group === "author" && !(p.followed||[]).length) return false;
+    if (group === "cites" && !(p.cites||[]).length) return false;
+    if (group === "new" && !(lastVisit && p.found > lastVisit)) return false;
+    if (cat && p.category !== cat) return false;
+    if (src === "j" && p.is_preprint) return false;
+    if (src === "a" && !p.is_preprint) return false;
+    if (pref && !p.preferred) return false;
+    if (q){
+      const hay = [p.title, (p.authors||[]).join(" "), p.abstract, p.venue, p.reason].join(" ").toLowerCase();
+      if (!q.split(/\s+/).every(w => hay.includes(w))) return false;
+    }
+    return true;
+  });
+  const s = $("#sort").value;
+  if (s === "score") out.sort((a,b) => (b.score??-1)-(a.score??-1) || (b.date||"").localeCompare(a.date||""));
+  else if (s === "date") out.sort((a,b) => (b.date||"").localeCompare(a.date||""));
+  else out.sort((a,b) => b.found.localeCompare(a.found) || (b.score??-1)-(a.score??-1));
+  return out;
+}
+
+function render(){
+  const list = filtered(), byFound = $("#sort").value === "found";
+  if (!papers.length){
+    $("#list").innerHTML = `<div class="empty">No papers yet. The first run may still be in progress; check back in a few minutes.</div>`;
+    $("#more").hidden = true; return;
+  }
+  if (!list.length){ $("#list").innerHTML = `<div class="empty">No papers match these filters.</div>`; $("#more").hidden = true; return; }
+  let html = "", day = null;
+  list.slice(0, shown).forEach(p => {
+    if (byFound && p.found !== day){ day = p.found; html += `<div class="day">Found ${fmtDay(day)}</div>`; }
+    html += card(p);
+  });
+  html = `<div class="sub" style="margin-top:10px">${list.length} paper${list.length===1?"":"s"}</div>` + html;
+  $("#list").innerHTML = html;
+  $("#more").hidden = list.length <= shown;
+}
+
+function header(){
+  const s = status || {};
+  if (s.last_run){
+    const t = new Date(s.last_run);
+    $("#lastrun").textContent = `Last checked ${t.toLocaleString(undefined,{dateStyle:"medium", timeStyle:"short"})}` +
+      ` · ${s.candidates ?? 0} new candidates screened · AI model: ${s.model || "none"}`;
+  } else $("#lastrun").textContent = "Waiting for the first run.";
+  const high = papers.filter(p => p.group==="high").length, maybe = papers.filter(p => p.group==="maybe").length,
+        auth = papers.filter(p => (p.followed||[]).length).length,
+        nw = lastVisit ? papers.filter(p => p.found > lastVisit).length : 0;
+  $("#stats").innerHTML = [
+    ["Highly relevant", high], ["Possibly relevant", maybe], ["From followed authors", auth],
+    ...(lastVisit ? [["New since last visit", nw]] : [])
+  ].map(([k,v]) => `<div class="stat"><b>${v}</b>${k}</div>`).join("");
+  const cats = [...new Set(papers.map(p => p.category).filter(Boolean))].sort();
+  $("#cat").innerHTML = `<option value="">All categories</option>` + cats.map(c => `<option>${esc(c)}</option>`).join("");
+  const m = location.hostname.match(/^([^.]+)\.github\.io$/), repo = location.pathname.split("/").filter(Boolean)[0];
+  const cfgUrl = m && repo ? `https://github.com/${m[1]}/${repo}/blob/main/config.yaml` : null;
+  const runUrl = m && repo ? `https://github.com/${m[1]}/${repo}/actions` : null;
+  $("#foot").innerHTML = `
+    <p><b>Topic.</b> ${esc(s.topic || "")}</p>
+    ${(s.key_papers||[]).length ? `<p><b>Key papers tracked for citations:</b> ${esc(s.key_papers.join("; "))}</p>` : ""}
+    ${(s.authors||[]).length ? `<p><b>Authors followed:</b> ${esc(s.authors.join(", "))}</p>` : ""}
+    <p>Sources: arXiv and journals (via OpenAlex). Relevance is judged by an AI model; scores are 0&ndash;10.
+    ${cfgUrl ? ` <a href="${cfgUrl}">Edit settings</a> &middot; <a href="${runUrl}">Run history</a>` : ""}</p>`;
+}
+
+async function load(){
+  lastVisit = store("radar-last-visit");
+  try{
+    const [a, b] = await Promise.all([
+      fetch("data/papers.json?" + Date.now()).then(r => r.ok ? r.json() : []),
+      fetch("data/status.json?" + Date.now()).then(r => r.ok ? r.json() : {})
+    ]);
+    papers = Array.isArray(a) ? a : []; status = b || {};
+  }catch(e){ papers = []; status = {}; }
+  header(); render();
+  const latest = papers.reduce((m,p) => p.found > m ? p.found : m, "");
+  if (latest) store("radar-last-visit", latest);
+}
+
+$("#seg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  document.querySelectorAll("#seg button").forEach(x => x.classList.toggle("on", x === b));
+  group = b.dataset.g; shown = 150; render();
+});
+["#q","#cat","#src","#sort","#pref"].forEach(s => $(s).addEventListener("input", () => { shown = 150; render(); }));
+$("#more").addEventListener("click", () => { shown += 150; render(); });
+load();
+</script>
+</body>
+</html>
