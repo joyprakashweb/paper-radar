@@ -1,0 +1,55 @@
+name: Paper Radar
+
+on:
+  schedule:
+    - cron: "30 4 * * *"      # 04:30 UTC = 10:00 IST, every day
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Look back this many days (leave blank for the normal run)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: paper-radar
+  cancel-in-progress: false
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Find new papers and send the email
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}
+          MAIL_ID: ${{ secrets.MAIL_ID }}
+          MAIL_TOKEN: ${{ secrets.MAIL_TOKEN }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+          DAYS: ${{ github.event.inputs.days }}
+        run: |
+          export PAGES_URL="https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/"
+          if [ -n "$DAYS" ]; then python -m radar.main --days "$DAYS"; else python -m radar.main; fi
+
+      - name: Save results to the repo (updates the web page)
+        if: always()
+        run: |
+          git config user.name "paper-radar-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data docs/data
+          if git diff --cached --quiet; then echo "nothing to save"; exit 0; fi
+          git commit -m "Radar update $(date -u +%F)"
+          git pull --rebase --autostash
+          git push
