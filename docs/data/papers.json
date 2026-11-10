@@ -1,5 +1,30 @@
 [
  {
+  "key": "doi:10.1016/j.compbiomed.2026.112065",
+  "title": "Biophysical modeling of iontophoresis-assisted spatially controlled riboflavin delivery in the human cornea",
+  "authors": [
+   "Giuseppe Lombardo",
+   "Giuseppe Massimo Bernava",
+   "Marco Lombardo"
+  ],
+  "n_authors": 3,
+  "venue": "Computers in Biology and Medicine",
+  "date": "2026-11-01",
+  "url": "https://doi.org/10.1016/j.compbiomed.2026.112065",
+  "doi": "10.1016/j.compbiomed.2026.112065",
+  "arxiv": null,
+  "abstract": "Background and objective Theranostic-guided transepithelial corneal cross-linking uses patterned iontophoresis for minimally invasive, spatially controlled riboflavin delivery in progressive keratoconus. This study developed a computational model to investigate the effects of applied current and reservoir-cornea conformity on riboflavin transport. Methods A 2D axisymmetric finite element model of the layered cornea and a clinically available patterned iontophoresis device was developed. The electric field was coupled to Nernst-Planck equations incorporating diffusion, electromigration, electroosmosis, tissue porosity, and tortuosity. The patterned mask was explicitly modeled, while a conformity parameter accounted for reservoir-cornea contact. Model parameters were constrained using two independent in vivo measurements: the effective electrical resistance of the iontophoresis–cornea syst",
+  "score": 8,
+  "category": "Biomedical & lab-on-chip devices",
+  "reason": "Models coupled electromigration and electroosmosis for drug delivery in tissue, aligning with the researcher's interest in coupled transport and biomedical devices.",
+  "preferred": false,
+  "cites": [],
+  "followed": [],
+  "is_preprint": false,
+  "group": "high",
+  "found": "2026-11-10"
+ },
+ {
   "key": "arxiv:2611.08965",
   "title": "Evaporation-induced colloidal diffusiophoresis in electrolyte solutions",
   "authors": [
